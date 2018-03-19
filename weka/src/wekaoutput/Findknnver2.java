@@ -11,6 +11,9 @@ import weka.core.Instance;
 import weka.core.Instances;
 
 public class Findknnver2 {
+	
+	
+	//删除了测试集的输出，改为leave_one_out
 
 	public static void main(String[] args) throws Exception {
 		// TODO 自动生成的方法存根
