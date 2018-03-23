@@ -53,15 +53,14 @@ public class Findknnver2 {
 
 				
 			MyIbk a = new MyIbk();
-			//String[] options;
-			//a.setOptions(options);
+
 			// Ð´³ö
 			File trainout = new File("D:\\data\\train.txt");
-			//File neighborout=new File("D:\\data\\trainclass.txt");
+
 
 			PrintStream out = new PrintStream(trainout);
 
-			//PrintStream out3 = new PrintStream(neighborout);
+
 
 			double classValuetr=0;
 			for (int j = 0; j < trdata.numInstances(); j++) {
@@ -87,20 +86,7 @@ public class Findknnver2 {
 					out.println(index+ ","+attribute);
 						
 				}
-			}
-//			for(int j1=0;j1<classValuetr.length;j1++){
-//				int classval=(int)(classValuetr[j1]);
-//				String str2=df.format(classval);
-//				StringBuffer temp=new StringBuffer(str2);
-//				for(int j2=1;j2<10;j2+=2) {
-//					temp.insert(j2, ',');
-//				}
-//
-//				out3.println(temp);
-//			}
-
-			
+			}	
 			out.close();
 			}
-
 	}
