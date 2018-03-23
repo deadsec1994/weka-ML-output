@@ -53,16 +53,17 @@ public class Findknnver2 {
 
 				
 			MyIbk a = new MyIbk();
-
+			//String[] options;
+			//a.setOptions(options);
 			// 写出
 			File trainout = new File("D:\\data\\train.txt");
-
+			File neighborout=new File("D:\\data\\trainclass.txt");
 
 			PrintStream out = new PrintStream(trainout);
 
+			PrintStream out3 = new PrintStream(neighborout);
 
-
-			double classValuetr=0;
+			double[] classValuetr=new double[trdata.numInstances()];
 			for (int j = 0; j < trdata.numInstances(); j++) {
 				Instance curInstance = trdata.get(j);
 				
@@ -72,21 +73,26 @@ public class Findknnver2 {
 				
 				neighborindice = a.distributionForInstance(curInstance,j);
 				trdata.add(j, curInstance);
-				classValuetr = trdata.instance(j).classValue();
+				classValuetr[j] = trdata.instance(j).classValue();
 				int index=j+1;
 				for (int k = 0; k < neighborindice.length; k++) {  //输出训练集的邻居
 					out.println(index+ ","+(int)neighborindice[k]);
 				}
-				int classval=(int)classValuetr;
-				String str2=df.format(classval);
-				for(int k3=0;k3<str2.length();k3++) {
-					char judge=str2.charAt(k3);
-					if(judge=='0') continue;
-					int attribute=k3+trdata.numInstances()+1;
-					out.println(index+ ","+attribute);
-						
-				}
-			}	
-			out.close();
 			}
+			for(int j1=0;j1<classValuetr.length;j1++){
+				int classval=(int)(classValuetr[j1]);
+				String str2=df.format(classval);
+				StringBuffer temp=new StringBuffer(str2);
+				for(int j2=1;j2<10;j2+=2) {
+					temp.insert(j2, ',');
+				}
+
+				out3.println(temp);
+			}
+
+			
+			out.close();
+			out3.close();
+			}
+
 	}
