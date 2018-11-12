@@ -1,25 +1,67 @@
 package wekaoutput;
 
-import weka.core.Instance;
 import weka.core.Instances;
-/*
- * 将多标签数据集原有的类标签合成为一个label（字符串）
- * 方便后来的计算最近邻操作
- */
+
 public class DataTransform {
 	String classes=new String();
-	public void delete(Instances data) {
+	/**
+	 * @Description:
+	 * 将多标签数据集原有的类标签合成为一个label（字符串）
+	 * 方便后来的计算最近邻操作
+	 * @param data 需要删除的数据集
+	 * @param index 类标签起始位置
+	 * @param NumOfClass 类标签个数
+	 * @param numofAttr 新类标签位置
+	 * @return 合并类标签后的数据集
+	 * @author Cui
+	 */
+	public void delete(Instances data , int index , int NumOfClass ) {   
+		int numofAttr = data.numAttributes()-1;
 		for(int i=0;i<data.numInstances();i++) {
-			int index=72;       //第一个类标签位置
-		for(int j=0;j<6;j++) {
-			Instance s=data.instance(i);
- 			int temp=(int)(data.instance(i).value(index++));
+			int trindex = index;
+			for(int j=0;j<NumOfClass;j++) {
+ 			int temp=(int)(data.instance(i).value(trindex++));
 			classes+=temp;
-		}
-			double cla=Double.parseDouble(classes);
-		data.instance(i).setValue(78, cla);   //将所有的实例添加一列新的String label
+			}
+//		System.out.println(data.instance(i).value(279));
+		//Double cla=Double.parseDouble(classes);
+		data.instance(i).setValue(numofAttr, classes);   //向最后一列赋新的label值
 		classes="";
-		cla=0;
+		//cla=0;
+		}
 	}
+	
+	public int[][] filter(Instances data)
+	{
+		int datanum = data.numInstances();
+
+	    int NumofAtt = data.numAttributes();
+
+	    int[][] dataout = new int[datanum][NumofAtt];
+	    for(int i = 0;i < datanum; i++) 
+	    {
+	    	int NumValues = data.instance(i).numValues();
+	    	for(int j = 0; j < NumValues;j++) {
+		    	int tmp = data.instance(i).index(j);
+		    	dataout[i][tmp] = 1;
+	    	}
+	    }
+	    return dataout;
 	}
+	
+	protected boolean[] toBool(double[] data) {
+		boolean[] bipartition = new boolean[data.length];
+		for(int i=0;i<data.length;i++) {
+			if(data[i] == 1.0)
+				bipartition[i] = true;
+			else
+				bipartition[i] = false;
+		}
+		return bipartition;
+	}
+	
+	
+	
+	
+	
 }

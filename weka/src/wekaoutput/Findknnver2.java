@@ -36,8 +36,8 @@ public class Findknnver2 {
 		testdata.insertAttributeAt(classes , testdata.numAttributes());
 		
 		
-		trs.delete(trdata);
-		trs.delete(testdata);
+//		trs.delete(trdata);
+//		trs.delete(testdata);
 		//删除原有类标签,index第一个类标签位置，每删一个类标签整体向前移动一位
 		for(int d1=0,index=72;d1<6;d1++) {
 			trdata.deleteAttributeAt(index);
