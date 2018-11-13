@@ -26,7 +26,7 @@ public class boost {
 		double Precision = 0; 
 		double Recall = 0;   
 		double F_Measure = 0;
-		int numofCla = 32;
+		int numofCla = 21;
 		
 		
 		double AvgCorrect2 = 0;
@@ -41,8 +41,8 @@ public class boost {
 		
 		
 //		for(int i = 0; i < 10; i++) {
-	        DataSource datasource1 =new DataSource("D:\\knnsearch\\trainout.csv");  
-	        DataSource datasource2 =new DataSource("D:\\knnsearch\\testout.csv");
+	        DataSource datasource1 =new DataSource("D:\\knnsearch\\train_out.csv");  
+	        DataSource datasource2 =new DataSource("D:\\knnsearch\\test_old.csv");
 	        Instances data = datasource1.getDataSet();
 	        Instances data2 = datasource2.getDataSet();
 	        NumericToNominal filter=new NumericToNominal();
@@ -70,51 +70,75 @@ public class boost {
 	        bagclassifier.setClassifier(baseClassifier);
 	        bagclassifier.buildClassifier(train);
 	        classifier.buildClassifier( train );
-	        //System.out.println( classifier.classifyInstance( test.instance( 0 ) ) );
+	        
+	        
 	        Evaluation testingEvaluation = new Evaluation(train);
 	        Evaluation testingEvaluation2 = new Evaluation(train);
-//	        double predictions1[] = testingEvaluation.evaluateModel(classifier, test);
-//	        double predictions2[] = testingEvaluation2.evaluateModel(bagclassifier, test);
-	        
-	        
-	        double predictions1[] = new double[numofCla];
-	        double predictions2[] = new double[numofCla];
+        
+	        double predictions[] = new double[numofCla];
 	        double Real[] = new double[numofCla];
 	        
 	        int count = 0;
 	        m.reset();
 	        for(int i = 0;i<test.numInstances();i++) {
 
-	        	predictions1[count] = classifier.classifyInstance(test.instance(i));
+	        	predictions[count] = classifier.classifyInstance(test.instance(i));
 	        	Real[count] = test.instance(i).classValue();
 	        	if(count == numofCla-1) {
-		        	boolean[] predict_label = df.toBool(predictions1);
+		        	boolean[] predict_label = df.toBool(predictions);
 		        	boolean[] real_label = df.toBool(Real);
 	        		count = 0;
 	        		m.Accuracy(predict_label, real_label);
+	        		m.Recall(predict_label, real_label);
+	        		m.Precision(predict_label, real_label);
+	        		m.HammingLoss(predict_label, real_label);
 	        	}else
 	        		count++;
 	        }
-	        double accuracy = m.getValue();
+	        
+	        AvgCorrect = m.getValue("-A");
+	        Precision = m.getValue("-P");
+	        Recall = m.getValue("-R");
+	        double HammingLoss1 = m.getValue("-H");
+	        m.reset();
+	        
+	        for(int i = 0;i<test.numInstances();i++) {
+
+	        	predictions[count] = bagclassifier.classifyInstance(test.instance(i));
+	        	Real[count] = test.instance(i).classValue();
+	        	if(count == numofCla-1) {
+		        	boolean[] predict_label = df.toBool(predictions);
+		        	boolean[] real_label = df.toBool(Real);
+	        		count = 0;
+	        		m.Accuracy(predict_label, real_label);
+	        		m.Recall(predict_label, real_label);
+	        		m.Precision(predict_label, real_label);
+	        		m.HammingLoss(predict_label, real_label);
+	        	}else
+	        		count++;
+	        }
+	        
+	        AvgCorrect2 = m.getValue("-A");
+	        Precision2 = m.getValue("-P");
+	        Recall2 = m.getValue("-R");
+	        double HammingLoss2 = m.getValue("-H");
+	        
+	        F_Measure = (2*Precision*Recall)/(Precision+Recall);
+			F_Measure2 = (2*Precision2*Recall2)/(Precision2+Recall2);
 	        
 	        
 	        
 	        
-	        
-	        
-	        
-	        
-	        
-	        double HammingLoss1 = testingEvaluation.HammingLoss(predictions1, test);
-	        double HammingLoss2 = testingEvaluation2.HammingLoss(predictions2, test);
-	        AvgCorrect += testingEvaluation.pctCorrect();
-	        Precision += testingEvaluation.weightedPrecision();
-	        Recall += testingEvaluation.weightedRecall();
-//	        F_Measure +=testingEvaluation.weightedFMeasure();
-	        
-	        AvgCorrect2 += testingEvaluation2.pctCorrect();
-	        Precision2 += testingEvaluation2.weightedPrecision();
-	        Recall2 += testingEvaluation2.weightedRecall();
+//	        double HammingLoss1 = testingEvaluation.HammingLoss(predictions1, test);
+//	        double HammingLoss2 = testingEvaluation2.HammingLoss(predictions2, test);
+//	        AvgCorrect += testingEvaluation.pctCorrect();
+//	        Precision += testingEvaluation.weightedPrecision();
+//	        Recall += testingEvaluation.weightedRecall();
+////	        F_Measure +=testingEvaluation.weightedFMeasure();
+//	        
+//	        AvgCorrect2 += testingEvaluation2.pctCorrect();
+//	        Precision2 += testingEvaluation2.weightedPrecision();
+//	        Recall2 += testingEvaluation2.weightedRecall();
 	        
 	        
 	        
@@ -127,21 +151,20 @@ public class boost {
 
 //		}
 		
-		F_Measure = (2*Precision*Recall)/(Precision+Recall);
-		F_Measure2 = (2*Precision2*Recall2)/(Precision2+Recall2);
+		
 		System.out.println("BoostAvgCorrect £º"+ AvgCorrect + "\n" + "BoostPrecision:" + 
 							Precision + "\n" + "BoostRecall: "+ Recall +"\n" + "BoostF-measure: " 
-							+ F_Measure + "\n" + "BoostHammingLoss: " + HammingLoss1
+							+ F_Measure + "\n" + "BoostHammingLoss: "+HammingLoss1 
 							);
 		System.out.println("BaggingAvgCorrect£º"+ AvgCorrect2 + "\n" + "BaggingPrecision:" + 
 				Precision2 + "\n" + "BaggingRecall: "+ Recall2 +"\n" + "BaggingF-measure: " 
-				+ F_Measure2 + "\n" + "BaggingHammingLoss: " + HammingLoss2);
-		ps.append("Arts1:\r\n"
-				 + "BoostAvgCorrect:"+AvgCorrect+"     BaggingAvgCorrect:" + AvgCorrect2 + "\r\n"
-				 + "BoostPrecision:" + Precision + "     BaggingPrecision:" + Precision2 + "\r\n"
-				 + "BoostRecall:" + Recall + "     BaggingRecall:" + Recall2 + "\r\n" 
-				 + "BoostF-measure:" + F_Measure + "     BaggingF-measure:" + F_Measure2 );
-		ps.close();
+				+ F_Measure2 + "\n" + "BaggingHammingLoss: " +HammingLoss2);
+//		ps.append("Arts1:\r\n"
+//				 + "BoostAvgCorrect:"+AvgCorrect+"     BaggingAvgCorrect:" + AvgCorrect2 + "\r\n"
+//				 + "BoostPrecision:" + Precision + "     BaggingPrecision:" + Precision2 + "\r\n"
+//				 + "BoostRecall:" + Recall + "     BaggingRecall:" + Recall2 + "\r\n" 
+//				 + "BoostF-measure:" + F_Measure + "     BaggingF-measure:" + F_Measure2 );
+//		ps.close();
 	}	
 }
 

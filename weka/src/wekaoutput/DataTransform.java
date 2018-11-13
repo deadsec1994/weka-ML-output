@@ -60,8 +60,5 @@ public class DataTransform {
 		return bipartition;
 	}
 	
-	
-	
-	
-	
+
 }

@@ -2,21 +2,50 @@ package wekaoutput;
 
 
 public class Measure {
-	protected double sum;
+	protected double sum1;
+	protected double sum2;
+	protected double sum3;
+	protected double sum4;
     /**
      * The number of validation examples processed
      */
-    protected int count;
+    protected int count1;
+    protected int count2;
+    protected int count3;
+    protected int count4;
+    
+    
+    protected double temp;
 
 	public void reset() {
-	        sum = 0;
-	        count = 0;
+	        sum1 = 0;
+	        count1 = 0;
+	        sum2 = 0;
+	        count2 = 0;
+	        sum3 = 0;
+	        count3 = 0;
+	        sum4 = 0;
+	        count4 = 0;
 	    }
 
+	
 
-	public double getValue() {
-	    return sum / count;
+//	public double getValue() {
+//	    return sum / count;
+//	    }
+	
+	public double getValue(String s) {
+	    if(s.equals("-A"))
+	    	  temp = sum1 / count1;
+	    else if(s.equals("-P"))
+	    	  temp = sum2 / count2;
+	    else if(s.equals("-R"))
+	    	  temp = sum3 / count3; 
+	    else if(s.equals("-H"))
+	    	temp = sum4/count4;
+		return temp;
 	    }
+	
 	
 	protected void Accuracy(boolean[] bipartition, boolean[] truth) {
         double intersection = 0;
@@ -31,11 +60,11 @@ public class Measure {
         }
 
         if (union == 0) {
-            sum += 1;
+            sum1 += 1;
         } else {
-            sum += intersection / union;
+            sum1 += intersection / union;
         }
-        count++;
+        count1++;
     }
 	protected void Precision(boolean[] bipartition, boolean[] truth) {
         double tp = 0;
@@ -55,13 +84,13 @@ public class Measure {
             }
         }
         if (tp + fp + fn == 0) {
-        	sum +=  1;
+        	sum2 +=  1;
         }
         if (tp + fp == 0) {
-        	sum +=  0;
+        	sum2 +=  0;
         }
-        sum +=  tp / (tp + fp);
-        count++;
+        sum2 +=  recall(tp,  fp,  fn);
+        count2++;
     }
     
     protected void Recall(boolean[] bipartition, boolean[] truth) {
@@ -82,13 +111,42 @@ public class Measure {
             }
         }
         if (tp + fp + fn == 0) {
-        	sum += 1;
+        	sum3 += 1;
         }
         if (tp + fn == 0) {
-        	sum += 0;
+        	sum3 += 0;
         }
-        sum += tp / (tp + fn);
-        count++;
+        sum3 += precision(tp,  fp,  fn);
+        count3++;
     }
-
+    public static double precision(double tp, double fp, double fn) {
+        if (tp + fp + fn == 0) {
+            return 1;
+        }
+        if (tp + fp == 0) {
+            return 0;
+        }
+        return tp / (tp + fp);
+    }
+    public static double recall(double tp, double fp, double fn) {
+        if (tp + fp + fn == 0) {
+            return 1;
+        }
+        if (tp + fn == 0) {
+            return 0;
+        }
+        return tp / (tp + fn);
+    }
+    
+    protected void HammingLoss(boolean[] bipartition, boolean[] groundTruth) {
+    	
+    	 double symmetricDifference = 0;
+         for (int i = 0; i < groundTruth.length; i++) {
+             if (bipartition[i] != groundTruth[i]) {
+                 symmetricDifference++;
+             }
+         }
+         sum4 += symmetricDifference / groundTruth.length;
+         count4++;
+    }
 }
